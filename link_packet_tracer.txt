@@ -2,3 +2,5 @@ https://www.pivotaltracker.com/n/projects/2178322
 
 Cambio en la velocidad, se estableció la velocidad de 8, y se ajustaron las historias de usuario para que queden en 4 sprints de 8 y uno de 6
 
+
+
