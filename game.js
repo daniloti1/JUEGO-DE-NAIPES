@@ -6,6 +6,13 @@ var gameOptions = {
     cardSheetHeight: 440,
     cardScale: 0.8
 }
+var gameGlobal = {
+    playerScore: 0,
+    machineScore: 0,
+    turno: 0,
+    partidas: 3
+}
+
 window.onload = function() {
     game = new Phaser.Game(gameOptions.gameWidth, gameOptions.gameHeight);
     game.state.add("PlayGame", playGame)
@@ -22,9 +29,33 @@ playGame.prototype = {
         game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
+        game.load.image("tuPuntaje", "tuPuntaje.png");
+        game.load.image("puntajeMaquina", "puntajeMaquina.png");
     },
     create: function() {
+
         game.stage.backgroundColor = "#4488AA" ;
+        game.add.sprite(game.width * 101/144, game.height * 5/8, "tuPuntaje");
+        game.add.sprite(game.width * 1/6, game.height * 5/8, "puntajeMaquina");
+
+        this.playerScoreText = game.add.text(game.width * 25/32, game.height * 3/4, '' + gameGlobal.playerScore, { fontSize: '80px', fill: '#000' });
+        this.machineScoreText = game.add.text(game.width / 4, game.height * 3/4, '' + gameGlobal.machineScore, { fontSize: '80px', fill: '#000' });
+
+        if (this.check()) {            
+            this.finalizar();
+            this.playerScoreText.setText("0");
+            this.machineScoreText.setText("0");
+        }
+
+        var textoTusNaipes = "TUS NAIPES";
+        var style = {font: "40px Arial", fill: "#ffffff", align: "center"};
+
+        var textoNaipesBaraja = "NAIPES DE BARAJA";
+        
+        game.add.text(game.width * 3/4, game.height / 4, textoTusNaipes, style);
+        game.add.text(game.width / 5, game.height / 4, textoNaipesBaraja, style);
+        
+
         this.infoGroup = game.add.group();
         this.infoGroup.visible = false;
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
@@ -58,6 +89,7 @@ playGame.prototype = {
         swipeDown.anchor.set(0.5);   
         this.infoGroup.add(swipeDown);
         game.input.onDown.add(this.beginSwipe, this);
+        gameGlobal.turno += 1;
     },
     makeCard: function(cardIndex) {
         var card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / -2, game.height / 2, "cards0");
@@ -105,10 +137,13 @@ playGame.prototype = {
             var newCard = this.deck[this.nextCardIndex - 1];
             var oldCard = this.deck[this.nextCardIndex - 2];
             if(((dir == -1) && ((newCard % 13 > oldCard % 13) || ((newCard % 13 == oldCard % 13) && (newCard > oldCard)))) || ((dir == 1) && ((newCard % 13 < oldCard % 13) || ((newCard % 13 == oldCard % 13) && (newCard < oldCard))))){
-                game.time.events.add(Phaser.Timer.SECOND, this.moveCards, this)
+                this.addPlayerScore();
+                game.time.events.add(Phaser.Timer.SECOND, this.fadeCards, this);                
             }
             else{
-                game.time.events.add(Phaser.Timer.SECOND, this.fadeCards, this)   
+                this.addMachineScore();
+                game.time.events.add(Phaser.Timer.SECOND, this.fadeCards, this);
+                   
             }
         }, this)
     },
@@ -140,5 +175,49 @@ playGame.prototype = {
         game.time.events.add(Phaser.Timer.SECOND, function(){
             game.state.start("PlayGame");    
         }, this)  
+    },
+
+    addPlayerScore: function() {
+        gameGlobal.playerScore += 1;
+
+    },
+
+    addMachineScore: function() {
+        gameGlobal.machineScore += 1;
+    },
+
+    check: function() {
+        if (gameGlobal.turno == gameGlobal.partidas) {
+                return true;
+        }
+        return false;
+    },
+
+    finalizar: function() {
+        //mensaje de final del juego
+        
+        var mensaje;
+        
+        if (gameGlobal.playerScore > gameGlobal.machineScore) {
+            mensaje = game.add.text(game.width * 5/14, game.height /3, 'Fin del juego\n Usted Gana', { fontSize: '150px', fill: '#000' });
+            game.paused = true;            
+        } else {
+            mensaje = game.add.text(game.width * 5/14, game.height /3, 'Fin del juego\n Usted Pierde', { fontSize: '150px', fill: '#000' });
+            game.paused = true;
+        }
+        gameGlobal = {
+            playerScore: 0,
+            machineScore: 0,
+            turno: 0,
+            partidas: gameGlobal.partidas
+        }
+        var continuar = game.add.text(game.width * 11/28, game.height * 2/3, "Continuar", { fontSize: '150px', fill: '#000' })
+        continuar.inputEnabled = true;
+        continuar.events.onInputDown.add(function () {            
+            game.paused = false;
+            continuar.destroy();
+            mensaje.destroy();
+        });
+
     }
 }
