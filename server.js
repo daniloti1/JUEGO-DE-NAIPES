@@ -1,11 +1,12 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 5000;
+var express= require('express');
+var http= require('http');
+var app= require('./app');
+var app2= express();
+var io= require('socket.io')(http);
 
-// console.log that your server is up and running
-app.listen(port, () => console.log(`Listening on port ${port}`));
+http.createServer(app.handleRequest).listen(8000);
 
-// create a GET route
-app.get('/index.html', (req, res) => {
-  res.send({ express: 'YOUR EXPRESS BACKEND IS CONNECTED TO REACT' });
+
+io.sockets.on('connection', function (socket) {
+ 	console.log('socket connection');
 });
