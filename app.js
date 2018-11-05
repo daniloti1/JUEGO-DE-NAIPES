@@ -12,6 +12,10 @@ function renderHtml(path, res){
 		}
 		res.end();
 	});
+
+
+
+	
 }
 
 module.exports = {
