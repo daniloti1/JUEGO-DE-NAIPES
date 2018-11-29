@@ -10,8 +10,9 @@ var gameGlobal = {
     playerScore: 0,
     machineScore: 0,
     turno: 0, 
-    partidas: 3
+    partidas: 3,
 }
+var Empty = [];
 
 var swipeUp;
 
@@ -36,6 +37,7 @@ playGame.prototype = {
         game.load.image("puntajeMaquina", "puntajeMaquina.png");
         game.load.spritesheet("button3", "button3.png", 302, 200);
         game.load.spritesheet("button5", "button5.png", 302, 200);
+
         },
         
     create: function() {
@@ -83,6 +85,8 @@ playGame.prototype = {
         this.infoGroup = game.add.group();
         this.infoGroup.visible = false;
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
+        this.deck2 = Phaser.ArrayUtils.numberArray(0, 51);
+        
         Phaser.ArrayUtils.shuffle(this.deck);
         this.cardsInGame = [this.makeCard(0), this.makeCard(1)];
         this.nextCardIndex = 2;
@@ -132,6 +136,7 @@ playGame.prototype = {
 			gameGlobal.partidas = 5;
         });
 		
+        console.log(Empty);
 		gameGlobal.turno += 1;
         
     },
@@ -139,7 +144,17 @@ playGame.prototype = {
         var card = game.add.sprite(gameOptions.cardSheetWidth * gameOptions.cardScale / -2, game.height / 2, "cards0");
         card.anchor.set(0.5);
         card.scale.set(gameOptions.cardScale);
-        card.loadTexture("cards" + this.getCardTexture(this.deck[cardIndex]));
+        var carta = this.deck[cardIndex];
+        for (i = 0; i < Empty.length; i++) {
+            while (Empty[i] == carta) {
+                var carta = this.deck[cardIndex];
+            }
+        }
+        while (Empty[Empty.length-1] < carta-3 || Empty[Empty.length-1] > carta+3) {
+            var carta = this.deck[cardIndex];
+        }
+        Empty.push(carta);
+        card.loadTexture("cards" + this.getCardTexture(carta));
         card.frame = this.getCardFrame(this.deck[cardIndex]);
         return card;
     },
