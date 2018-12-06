@@ -10,7 +10,7 @@ var gameGlobal = {
     playerScore: 0,
     machineScore: 0,
     turno: 0, 
-    partidas: 3,
+    partidas: 3
 }
 var Empty = [];
 
@@ -85,7 +85,6 @@ playGame.prototype = {
         this.infoGroup = game.add.group();
         this.infoGroup.visible = false;
         this.deck = Phaser.ArrayUtils.numberArray(0, 51);
-        this.deck2 = Phaser.ArrayUtils.numberArray(0, 51);
         
         Phaser.ArrayUtils.shuffle(this.deck);
         this.cardsInGame = [this.makeCard(0), this.makeCard(1)];
@@ -136,7 +135,7 @@ playGame.prototype = {
 			gameGlobal.partidas = 5;
         });
 		
-        console.log(Empty);
+        console.log("Empty: "+Empty);
 		gameGlobal.turno += 1;
         
     },
@@ -145,17 +144,24 @@ playGame.prototype = {
         card.anchor.set(0.5);
         card.scale.set(gameOptions.cardScale);
         var carta = this.deck[cardIndex];
-        for (i = 0; i < Empty.length; i++) {
-            while (Empty[i] == carta) {
-                var carta = this.deck[cardIndex];
+        
+        console.log("carta: "+carta);
+        
+    	var ultima = Empty[Empty.length-1]
+    	for (i = 0; i < Empty.length; i++) {
+            while (Empty[i] == carta)// || (ultima < carta-3 || ultima > carta+3)
+             {
+            	cardIndex += 2;
+                carta = this.deck[cardIndex];
+                console.log("cardIndex: "+cardIndex);
+                console.log("Carta nueva: "+carta);
             }
         }
-        while (Empty[Empty.length-1] < carta-3 || Empty[Empty.length-1] > carta+3) {
-            var carta = this.deck[cardIndex];
-        }
+	        
         Empty.push(carta);
+        console.log("Empty antes: "+Empty);
         card.loadTexture("cards" + this.getCardTexture(carta));
-        card.frame = this.getCardFrame(this.deck[cardIndex]);
+        card.frame = this.getCardFrame(carta);
         return card;
     },
     getCardTexture: function(cardValue){
@@ -283,6 +289,7 @@ playGame.prototype = {
                 turno: 1,
                 partidas: gameGlobal.partidas
             }
+            Empty = [];
             
             game.paused = false;
             e.playerScoreText.setText("0");
