@@ -135,7 +135,6 @@ playGame.prototype = {
 			gameGlobal.partidas = 5;
         });
 		
-        console.log("Empty: "+Empty);
 		gameGlobal.turno += 1;
         
     },
@@ -145,7 +144,6 @@ playGame.prototype = {
         card.scale.set(gameOptions.cardScale);
         var carta = this.deck[cardIndex];
         
-        console.log("carta: "+carta);
         
     	var ultima = Empty[Empty.length-1]
     	for (i = 0; i < Empty.length; i++) {
@@ -153,13 +151,10 @@ playGame.prototype = {
              {
             	cardIndex += 2;
                 carta = this.deck[cardIndex];
-                console.log("cardIndex: "+cardIndex);
-                console.log("Carta nueva: "+carta);
             }
         }
 	        
         Empty.push(carta);
-        console.log("Empty antes: "+Empty);
         card.loadTexture("cards" + this.getCardTexture(carta));
         card.frame = this.getCardFrame(carta);
         return card;
